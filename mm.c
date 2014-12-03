@@ -51,8 +51,11 @@ static char* heap_listp;
 #define DSIZE			8 		/* Double word size (bytes) */
 #define CHUNKSIZE		(1<<12)	/* Extend heap by this maount (bytes) */
 #define OVERHEAD		8		/* Overhead of header & footer (bytes) */
+#define MIN_BLKSIZE		16		/* Minimum size of a block (bytes) */
 
+/* Maximum and minimum of two numbers */
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
 
 /* Pack a size and allocated bit into a word */
 #define PACK(size, alloc) ((size) | (alloc))
@@ -253,7 +256,8 @@ void *mm_realloc(void *ptr, size_t size)
     newptr = mm_malloc(size);
     if (newptr == NULL)
       return NULL;
-    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+//    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+    copySize = GET_SIZE(HDRP(oldptr));
     if (size < copySize)
       copySize = size;
     memcpy(newptr, oldptr, copySize);
